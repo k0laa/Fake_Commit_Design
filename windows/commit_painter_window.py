@@ -1,8 +1,8 @@
 import datetime
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor, QBrush, QPen
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsView, QGraphicsScene, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsView, QGraphicsScene
 
 from ui.theme import DEFAULT_THEME
 
@@ -25,9 +25,6 @@ class CommitPainter(QMainWindow):
         self.level_colors = ["#0d4429", "#016c31", "#26a641", "#39d353"]
 
         self.init_ui()
-
-        QTimer.singleShot(100, lambda: self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
-
 
     def init_ui(self):
         layout = QVBoxLayout()
@@ -63,11 +60,6 @@ class CommitPainter(QMainWindow):
             self.level_buttons.append(btn)
             button_layout.addWidget(btn)
 
-        self.year_combo = QComboBox()
-        self.years = [str(y) for y in reversed(range(2010, datetime.date.today().year + 1))]
-        self.year_combo.addItems(self.years)
-        self.year_combo.currentIndexChanged.connect(self.update_scene)
-        button_layout.addWidget(self.year_combo)
 
         layout.addLayout(button_layout)
 
@@ -80,7 +72,6 @@ class CommitPainter(QMainWindow):
         self.central_widget.setLayout(layout)
         self.update_scene()
 
-
     def set_level(self, level):
         self.current_level = level
         self.eraser_button.setChecked(level == 0)
@@ -91,35 +82,14 @@ class CommitPainter(QMainWindow):
         self.grid = [[0 for _ in range(53)] for _ in range(7)]
         self.update_scene()
 
-    def get_start_date(self, year):
-        d = datetime.date(year, 1, 1)
-        while d.weekday() != 6:
-            d -= datetime.timedelta(days=1)
-        return d
-
-    def get_end_date(self, year):
-        d = datetime.date(year, 12, 31)
-        while d.weekday() != 5:
-            d += datetime.timedelta(days=1)
-        return d
-
     def update_scene(self):
         self.scene.clear()
-
-        year = int(self.year_combo.currentText())
-        start_date = self.get_start_date(year)
-        end_date = self.get_end_date(year)
-        weeks_in_year = ((end_date - start_date).days + 1) // 7
-
         for y in range(7):
-            for x in range(weeks_in_year):
+            for x in range(52):
                 rect_x = x * (self.cell_size + self.spacing)
                 rect_y = y * (self.cell_size + self.spacing)
                 level = self.grid[y][x] if x < len(self.grid[y]) else 0
-                target_date = start_date + datetime.timedelta(weeks=x, days=y)
-                if target_date.year != year:
-                    color = QColor("#1c1b2f")
-                elif level in range(1, 5):
+                if level in range(1, 5):
                     color = QColor(self.level_colors[level - 1])
                 else:
                     color = QColor("#2d2c45")
