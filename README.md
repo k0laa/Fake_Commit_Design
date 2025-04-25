@@ -51,7 +51,7 @@
 1. **Eğer katkılarınız GÖzükmüyorsa:**
     - GitHub ayarlarından "Contributions" kısmını kontrol edin.
     - "Include private contributions on my profile" seçeneğini aktif edin.
-    - ![Privete contributions](resources\Troubleshooting.png)
+    - ![Private contributions](resources/Troubleshooting.png)
 
 
 
