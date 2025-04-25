@@ -26,7 +26,7 @@ class CommitPainter(QMainWindow):
 
         self.init_ui()
 
-        QTimer.singleShot(100, lambda: self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
+self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
 
 
     def init_ui(self):
