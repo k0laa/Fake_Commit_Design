@@ -2,7 +2,7 @@ import datetime
 import os
 import git
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QFont, QColor, QBrush, QPen
+from PyQt5.QtGui import QFont, QColor, QBrush, QPen, QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsView, QGraphicsScene, QComboBox
 
 from ui.theme import DEFAULT_THEME
@@ -13,6 +13,9 @@ class CommitPainter(QMainWindow):
         super().__init__()
         self.setWindowTitle("Commit Painter")
         self.setGeometry(100, 100, 1150, 490)
+
+        self.setWindowIcon(QIcon("resources/icon_3.png"))
+
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
