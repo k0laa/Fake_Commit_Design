@@ -25,8 +25,8 @@ class CommitPainter(QMainWindow):
         self.level_colors = ["#0d4429", "#016c31", "#26a641", "#39d353"]
 
         self.init_ui()
+        QTimer.singleShot(100, lambda: self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
 
-self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
 
 
     def init_ui(self):
