@@ -154,8 +154,10 @@ class CommitPainter(QMainWindow):
                 x = int(pos.x() // cell_space)
                 y = int(pos.y() // cell_space)
                 if 0 <= x < 53 and 0 <= y < 7:
-                    target_date = datetime.timedelta(weeks=x, days=y)
-                    if target_date:
+                    year = int(self.year_combo.currentText())
+                    start_date = self.get_start_date(year)
+                    target_date = start_date + datetime.timedelta(weeks=x, days=y)
+                    if target_date.year == year:
                         self.grid[y][x] = self.current_level
                         self.update_scene()
                 return True
