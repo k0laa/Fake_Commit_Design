@@ -1,5 +1,6 @@
 import datetime
-
+import os
+import git
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QColor, QBrush, QPen
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsView, QGraphicsScene, QComboBox
@@ -76,6 +77,7 @@ class CommitPainter(QMainWindow):
 
         self.commit_button = QPushButton("Commitleri Oluştur")
         self.commit_button.setObjectName("CommitButton")
+        self.commit_button.clicked.connect(self.generate_commits)
         layout.addWidget(self.commit_button)
 
         self.central_widget.setLayout(layout)
@@ -158,3 +160,39 @@ class CommitPainter(QMainWindow):
                         self.update_scene()
                 return True
         return super().eventFilter(source, event)
+
+    def generate_commits(self):
+        repo_path = os.getcwd()
+        repo = git.Repo(repo_path)
+        config_reader = repo.config_reader()
+        user_name = config_reader.get_value("user", "name")
+        user_email = config_reader.get_value("user", "email")
+        author = git.Actor(user_name, user_email)
+
+        year = int(self.year_combo.currentText())
+        start_date = self.get_start_date(year)
+        end_date = self.get_end_date(year)
+        weeks_in_year = ((end_date - start_date).days + 1) // 7
+
+        for y in range(7):
+            for x in range(weeks_in_year):
+                level = self.grid[y][x] if x < len(self.grid[y]) else 0
+                if level > 0:
+                    target_date = start_date + datetime.timedelta(weeks=x, days=y)
+                    if target_date.year != year:
+                        continue
+                    for i in range(level):
+                        git_date = target_date.strftime('%Y-%m-%dT12:00:00')
+                        os.environ['GIT_AUTHOR_DATE'] = git_date
+                        os.environ['GIT_COMMITTER_DATE'] = git_date
+
+                        try:
+                            file_path = os.path.join(repo_path, f"fake_commit_{x}_{y}_{i}.txt")
+                            with open(file_path, 'w') as f:
+                                f.write(f"Fake commit on {git_date}\n")
+                            repo.index.add([file_path])
+                            repo.index.commit("Fake commit", author=author)
+                        except Exception as e:
+                            print(f"Commit error at {target_date}: {e}")
+
+        repo.git.push("origin", "main", "--force")
