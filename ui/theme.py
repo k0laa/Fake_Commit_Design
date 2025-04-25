@@ -32,4 +32,29 @@ DEFAULT_THEME = """
             QPushButton#EraseButton:hover {
                 background-color: #666;
             }
+            QComboBox {
+                background-color: #3a375c;
+                color: #ffffff;
+                border: 1px solid #444;
+                padding: 5px;
+                border-radius: 6px;
+                min-width: 80px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #1c1b2f;
+                color: white;
+                selection-background-color: #444;
+                selection-color: white;
+            }
+            QPushButton#CommitButton {
+                background-color: #9f5fff;
+                color: white;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 8px 16px;
+                border: 2px solid #6c2cff;
+            }
+            QPushButton#CommitButton:hover {
+                background-color: #b278ff;
+            }
         """

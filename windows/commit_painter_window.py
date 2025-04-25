@@ -27,12 +27,10 @@ class CommitPainter(QMainWindow):
         self.init_ui()
         QTimer.singleShot(100, lambda: self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio))
 
-
-
     def init_ui(self):
         layout = QVBoxLayout()
-
         button_layout = QHBoxLayout()
+
         self.clear_button = QPushButton("Tümünü Temizle")
         self.clear_button.setObjectName("ClearButton")
         self.clear_button.clicked.connect(self.clear_grid)
@@ -58,7 +56,6 @@ class CommitPainter(QMainWindow):
                             border: 3px solid yellow;
                         }}
                     """)
-
             btn.clicked.connect(lambda _, lvl=i: self.set_level(lvl))
             self.level_buttons.append(btn)
             button_layout.addWidget(btn)
@@ -77,9 +74,12 @@ class CommitPainter(QMainWindow):
         self.preview_view.viewport().installEventFilter(self)
         layout.addWidget(self.preview_view)
 
+        self.commit_button = QPushButton("Commitleri Oluştur")
+        self.commit_button.setObjectName("CommitButton")
+        layout.addWidget(self.commit_button)
+
         self.central_widget.setLayout(layout)
         self.update_scene()
-
 
     def set_level(self, level):
         self.current_level = level
@@ -110,6 +110,20 @@ class CommitPainter(QMainWindow):
         start_date = self.get_start_date(year)
         end_date = self.get_end_date(year)
         weeks_in_year = ((end_date - start_date).days + 1) // 7
+
+        month_names = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+        month_positions = {}
+
+        for week in range(weeks_in_year):
+            current_date = start_date + datetime.timedelta(weeks=week)
+            if current_date.day <= 7 and current_date.month not in month_positions.values():
+                month_positions[week] = current_date.month
+
+        font = QFont("Segoe UI", 8)
+        for week, month_index in month_positions.items():
+            text_item = self.scene.addText(month_names[month_index - 1], font)
+            text_item.setDefaultTextColor(QColor("#ffffff"))
+            text_item.setPos(week * (self.cell_size + self.spacing), -20)
 
         for y in range(7):
             for x in range(weeks_in_year):
