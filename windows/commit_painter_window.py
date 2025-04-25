@@ -1,4 +1,8 @@
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+import datetime
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QColor, QBrush, QPen
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGraphicsView, QGraphicsScene
 
 from ui.theme import DEFAULT_THEME
 
@@ -12,9 +16,13 @@ class CommitPainter(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
+        self.grid = [[0 for _ in range(53)] for _ in range(7)]
+        self.current_level = 1
+        self.cell_size = 12
+        self.spacing = 3
+
         self.setStyleSheet(DEFAULT_THEME)
         self.level_colors = ["#0d4429", "#016c31", "#26a641", "#39d353"]
-
 
         self.init_ui()
 
@@ -49,13 +57,55 @@ class CommitPainter(QMainWindow):
             btn.clicked.connect(lambda _, lvl=i: self.set_level(lvl))
             self.level_buttons.append(btn)
             button_layout.addWidget(btn)
-
         layout.addLayout(button_layout)
 
+        self.preview_view = QGraphicsView()
+        self.scene = QGraphicsScene()
+        self.preview_view.setScene(self.scene)
+        self.preview_view.viewport().installEventFilter(self)
+        layout.addWidget(self.preview_view)
+
+
+
+
         self.central_widget.setLayout(layout)
+        self.update_scene()
 
     def set_level(self, level):
         self.current_level = level
         self.eraser_button.setChecked(level == 0)
         for i, btn in enumerate(self.level_buttons):
             btn.setChecked(i + 1 == level)
+
+    def update_scene(self):
+        self.scene.clear()
+        for y in range(7):
+            for x in range(52):
+                rect_x = x * (self.cell_size + self.spacing)
+                rect_y = y * (self.cell_size + self.spacing)
+                level = self.grid[y][x] if x < len(self.grid[y]) else 0
+                if level in range(1, 5):
+                    color = QColor(self.level_colors[level - 1])
+                else:
+                    color = QColor("#2d2c45")
+                brush = QBrush(color)
+                pen = QPen(QColor("#1c1b2f"))
+                self.scene.addRect(rect_x, rect_y, self.cell_size, self.cell_size, pen, brush)
+
+        self.preview_view.setSceneRect(self.scene.itemsBoundingRect())
+        self.preview_view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+
+    def eventFilter(self, source, event):
+        if source is self.preview_view.viewport():
+            if event.type() in [event.MouseButtonPress, event.MouseMove] and event.buttons() == Qt.LeftButton:
+                pos = self.preview_view.mapToScene(event.pos())
+                cell_space = self.cell_size + self.spacing
+                x = int(pos.x() // cell_space)
+                y = int(pos.y() // cell_space)
+                if 0 <= x < 53 and 0 <= y < 7:
+                    target_date = datetime.timedelta(weeks=x, days=y)
+                    if target_date:
+                        self.grid[y][x] = self.current_level
+                        self.update_scene()
+                return True
+        return super().eventFilter(source, event)
