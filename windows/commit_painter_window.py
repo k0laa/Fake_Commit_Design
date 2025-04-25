@@ -32,11 +32,13 @@ class CommitPainter(QMainWindow):
         button_layout = QHBoxLayout()
         self.clear_button = QPushButton("Tümünü Temizle")
         self.clear_button.setObjectName("ClearButton")
+        self.clear_button.clicked.connect(self.clear_grid)
         button_layout.addWidget(self.clear_button)
 
         self.eraser_button = QPushButton("Silgi")
         self.eraser_button.setObjectName("EraseButton")
         self.eraser_button.setCheckable(True)
+        self.eraser_button.clicked.connect(lambda: self.set_level(0))
         button_layout.addWidget(self.eraser_button)
 
         self.level_buttons = []
@@ -57,6 +59,8 @@ class CommitPainter(QMainWindow):
             btn.clicked.connect(lambda _, lvl=i: self.set_level(lvl))
             self.level_buttons.append(btn)
             button_layout.addWidget(btn)
+
+
         layout.addLayout(button_layout)
 
         self.preview_view = QGraphicsView()
@@ -64,9 +68,6 @@ class CommitPainter(QMainWindow):
         self.preview_view.setScene(self.scene)
         self.preview_view.viewport().installEventFilter(self)
         layout.addWidget(self.preview_view)
-
-
-
 
         self.central_widget.setLayout(layout)
         self.update_scene()
@@ -76,6 +77,10 @@ class CommitPainter(QMainWindow):
         self.eraser_button.setChecked(level == 0)
         for i, btn in enumerate(self.level_buttons):
             btn.setChecked(i + 1 == level)
+
+    def clear_grid(self):
+        self.grid = [[0 for _ in range(53)] for _ in range(7)]
+        self.update_scene()
 
     def update_scene(self):
         self.scene.clear()
