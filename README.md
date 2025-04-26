@@ -12,8 +12,7 @@
 ## 🚀 Özellikler
 
 - 🖌️ **Özgür Tasarım:** Boş bir GitHub deposunda istediğiniz şekli veya resmi oluşturabilirsiniz.
-- 🧠 **Sınırsız Tasarım:
-  ** Sadece hayal gücünüzle sınırlısınız; herhangi bir resmi veya deseni katkı grafiğinize yansıtabilirsiniz.
+- 🧠 **Sınırsız Tasarım:** Sadece hayal gücünüzle sınırlısınız; herhangi bir resmi veya deseni katkı grafiğinize yansıtabilirsiniz.
 - 🛠️ **Kolay Kullanım:** Basit adımlarla istediğiniz tasarımı oluşturabilirsiniz.
 
 ---
